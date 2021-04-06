@@ -1,41 +1,60 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './styles.scss';
 import AuthCard from '../Card';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import ButtonIcon from 'core/components/ButtonIcon';
+import { makeLogin } from 'core/utils/request';
+import { saveSessionData } from 'core/utils/auth';
 
 type FormData = {
-    email: string;
+    username: string;
     password: string;
 }
 
 
 const Login = () => {
     const { register, handleSubmit } = useForm<FormData>();
+    const [hasError, setHasError] = useState(false);
+    const history = useHistory()
+
 
     const onSubmit = (data: FormData) => {
-        console.log(data);
-        //chamar api de autenticacion
+        makeLogin(data)
+            .then(response => {
+                setHasError(false)
+                saveSessionData(response.data)
+                history.push('/admin')
+            })
+            .catch(() => {
+                setHasError(true)
+            })
     }
 
     return (
         <AuthCard title="login">
+            {
+                hasError && (
+                    <div className="alert alert-danger mt-5">
+                        Usuario ou senha invalidos!
+                    </div>
+                )
+            }
             <form onSubmit={handleSubmit(onSubmit)} className="login-form">
                 <input
-                    name="email" 
-                    ref={register}
+                    name="username"
+                    ref={register({ required: true })}
                     type="email"
                     className="form-control input-base margin-bottom-30"
                     placeholder="Email"
-                    />
+                />
                 <input
                     type="password"
                     className="form-control input-base"
                     placeholder="Password"
-                    name="password" 
-                    ref={register}
-                    />
+                    name="password"
+                    ref={register({ required: true })}
+                />
                 <Link to="/admin/auth/recover" className="login-link-recover">
                     Esqueci a senha?
                 </Link>
