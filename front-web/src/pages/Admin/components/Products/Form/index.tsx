@@ -1,4 +1,4 @@
-import { makeRequest } from 'core/utils/request';
+import { makePrivateRequest } from 'core/utils/request';
 import React, { useState } from 'react';
 import BaseForm from '../../BaseForm';
 import './styles.scss';
@@ -6,7 +6,7 @@ import './styles.scss';
 type FormState = {
     name: string;
     price: string;
-    category:string;
+    category: string;
     description: string;
 }
 
@@ -16,7 +16,7 @@ const Form = () => {
     const [formData, setFormData] = useState<FormState>({
         name: '',
         price: '',
-        category: '',
+        category: '1',
         description: ''
     });
 
@@ -24,7 +24,7 @@ const Form = () => {
         const name = event.target.name;
         const value = event.target.value;
 
-        setFormData(data => ({ ...data, [name]: value}));
+        setFormData(data => ({ ...data, [name]: value }));
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,10 +32,13 @@ const Form = () => {
         const payload = {
             ...formData,
             imgUrl: 'https://images.clarin.com/2020/09/15/las-versiones-de-playstation-5___EydtuoqBr_340x340__1.jpg',
-            categories: [{id: formData.category}]
+            categories: [{ id: formData.category }]
         }
-        
-        makeRequest({ url: '/products', method:'POST', data: payload });
+
+        makePrivateRequest({ url: '/products', method: 'POST', data: payload })
+            .then(() => {
+                setFormData({ name: '', category: '', price: '', description: '' })
+            })
     }
 
     return (
@@ -45,14 +48,14 @@ const Form = () => {
                 <div className="row">
                     <div className="col-6">
                         <input
-                        value={formData.name}
+                            value={formData.name}
                             name="name"
                             type="text" className="form-control mb-5"
                             onChange={handleOnChange}
                             placeholder="Nombre del producto"
                         />
                         <select
-                        value={formData.category}
+                            value={formData.category}
                             name="category"
                             className="form-control mb-5" onChange={handleOnChange}>
                             <option value="1">Libros</option>
@@ -61,7 +64,7 @@ const Form = () => {
                         </select>
 
                         <input
-                        value={formData.price}
+                            value={formData.price}
                             name="price"
                             type="text" className="form-control"
                             onChange={handleOnChange}
@@ -69,11 +72,11 @@ const Form = () => {
                         />
                     </div>
                     <div className="col-6">
-                        <textarea 
-                        value={formData.description}
-                        className='form-control'
-                        name="description"  cols={30} rows={10}
-                        onChange={handleOnChange}
+                        <textarea
+                            value={formData.description}
+                            className='form-control'
+                            name="description" cols={30} rows={10}
+                            onChange={handleOnChange}
                         ></textarea>
                     </div>
                 </div>
