@@ -77,7 +77,7 @@ const Form = () => {
                             className='form-control'
                             name="description" cols={30} rows={10}
                             onChange={handleOnChange}
-                        ></textarea>
+                        />
                     </div>
                 </div>
 
